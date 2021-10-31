@@ -27,19 +27,20 @@ contract certificate {
     mapping(address => userinfo) public addressToInfo;
     mapping(address => cert) public certificates;
     
+    
     function hasinfo(address addr) public returns(bool){
-        if(addressToInfo[addr].addr == 0){
+        if(addressToInfo[addr].id == 0 ){
             return false;
         }
         return true;
     }
     
     function setTime() public{
-        notBefore = now;
-        notAfter = notBefore + 1 years;
+        notBefore = block.timestamp;
+        notAfter = notBefore + 365 days;
     }
     
-    function newUserInfo(string name, string birth) public{
+    function newUserInfo(string memory name, string memory birth) public{
         addressToInfo[addr].addr = msg.sender;
         addressToInfo[addr].name = name;
         addressToInfo[addr].birth = birth;
@@ -47,20 +48,20 @@ contract certificate {
         addressToInfo[addr].notAfter = notAfter;
         addressToInfo[addr].id = setId();
         
-        certhash = keccak256(addressToInfo[addr]);
+        certhash = keccak256(abi.encodePacked(addressToInfo[addr].name));
     }
     
     function setId() public returns(bytes32){
-        return keccak256(now, msg.sender);
+        return keccak256(abi.encodePacked(block.timestamp, msg.sender));
     }
     
     function newCert() public{
-        certificates[addr].caPubkey = "0x19dec5DE28cD9433d73A5FEA9C9D99E137064B57";
+        certificates[addr].caPubkey = 0x19dec5DE28cD9433d73A5FEA9C9D99E137064B57;
         certificates[addr].userPubkey = addr;
         certificates[addr].certhash = certhash;
     }
     
-    function getCertificate() public view returns(address, string, string, uint, uint){
-        return(newUserInfo[addr].addr, newUserInfo[addr].name, newUserInfo[addr].birth, newUserInfo[addr].notBefore, newUserInfo[addr].notAfter);
+    function getCertificate() public view returns(address, string memory, string memory, uint, uint){
+        return(addressToInfo[addr].addr, addressToInfo[addr].name, addressToInfo[addr].birth, addressToInfo[addr].notBefore, addressToInfo[addr].notAfter);
     }
 }
