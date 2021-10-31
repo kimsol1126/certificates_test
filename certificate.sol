@@ -64,4 +64,16 @@ contract certificate {
     function getCertificate() public view returns(address, string memory, string memory, uint, uint){
         return(addressToInfo[addr].addr, addressToInfo[addr].name, addressToInfo[addr].birth, addressToInfo[addr].notBefore, addressToInfo[addr].notAfter);
     }
+    
+    function getCertInfo() public view returns(bytes32, address, address){
+        return(certificates[addr].certhash, certificates[addr].caPubkey, certificates[addr].userPubkey);
+    }
+    
+    function issue(string memory name, string memory birth) public {
+        if(hasinfo(addr) == false){
+            setTime();
+            newUserInfo(name, birth);
+            newCert();
+        }
+    }
 }
