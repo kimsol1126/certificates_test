@@ -2,12 +2,12 @@ pragma solidity ^0.8.0;
 
 contract certificate {
     struct userinfo{
-        address addr;
-        string name;
-        string birth;
-        uint notBefore;
-        uint notAfter;
-        bytes32 id;
+        address addr; //20
+        string name; //bytes(u.name).length
+        string birth; //bytes(u.birth).length
+        uint notBefore; //32
+        uint notAfter; //32
+        bytes32 id; //32
     }
     struct cert {
         bytes32 certhash;
@@ -48,7 +48,45 @@ contract certificate {
         addressToInfo[addr].notAfter = notAfter;
         addressToInfo[addr].id = setId();
         
-        certhash = keccak256(abi.encodePacked(addressToInfo[addr].name));
+        certhash = keccak256(userinfoToBytes(addressToInfo[addr]));
+        //certhash = keccak256(abi.encodePacked(addressToInfo[addr].name));
+    }
+    
+    function userinfoToBytes(userinfo memory u) private returns (bytes memory data){
+        uint _size = 116 + bytes(u.name).length + bytes(u.birth).length;
+        bytes memory _data = new bytes(_size);
+        
+        uint counter = 0;
+        bytes memory baddr = abi.encodePacked(u.addr);
+        bytes memory bBefore = abi.encodePacked(u.notBefore);
+        bytes memory bAfter = abi.encodePacked(u.notAfter);
+        bytes memory bId = abi.encodePacked(u.id);
+        for (uint i = 0; i < 20; i++){
+            _data[counter] = bytes(baddr)[i];
+            counter++;
+        }
+        for (uint i = 0; i < bytes(u.name).length; i++){
+            _data[counter] = bytes(u.name)[i];
+            counter++;
+        }
+        for (uint i = 0; i < bytes(u.birth).length; i++){
+            _data[counter] = bytes(u.birth)[i];
+            counter++;
+        }
+        for (uint i = 0; i < 32; i++){
+            _data[counter] = bytes(bBefore)[i];
+            counter++;
+        }
+        for (uint i = 0; i < 32; i++){
+            _data[counter] = bytes(bAfter)[i];
+            counter++;
+        }
+        for (uint i = 0; i < 32; i++){
+            _data[counter] = bytes(bId)[i];
+            counter++;
+        }
+        
+        return _data;
     }
     
     function setId() public returns(bytes32){
