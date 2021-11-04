@@ -49,10 +49,9 @@ contract certificate {
         addressToInfo[addr].id = setId();
         
         certhash = keccak256(userinfoToBytes(addressToInfo[addr]));
-        //certhash = keccak256(abi.encodePacked(addressToInfo[addr].name));
     }
     
-    function userinfoToBytes(userinfo memory u) private returns (bytes memory data){
+    function userinfoToBytes(userinfo memory u) private returns (bytes memory data){    //userinfo 구조체 내부 값들을 바이트열로 변환하여 연접
         uint _size = 116 + bytes(u.name).length + bytes(u.birth).length;
         bytes memory _data = new bytes(_size);
         
@@ -86,10 +85,10 @@ contract certificate {
             counter++;
         }
         
-        return _data;
+        return _data;   //연접한 바이트열 반환
     }
     
-    function setId() public returns(bytes32){
+    function setId() public returns(bytes32){   //현재시각+컨트랙트 호출자 정보를 이용한 랜덤 난수 생성
         return keccak256(abi.encodePacked(block.timestamp, msg.sender));
     }
     
@@ -99,11 +98,11 @@ contract certificate {
         certificates[addr].certhash = certhash;
     }
     
-    function getCertificate() public view returns(address, string memory, string memory, uint, uint){
+    function getCertificate() public view returns(address, string memory, string memory, uint, uint){   //인증서 내부 정보 반환
         return(addressToInfo[addr].addr, addressToInfo[addr].name, addressToInfo[addr].birth, addressToInfo[addr].notBefore, addressToInfo[addr].notAfter);
     }
     
-    function getCertInfo() public view returns(bytes32, address, address){
+    function getCertInfo() public view returns(bytes32, address, address){  //인증서 해시, 이용자 공개키, 발급기관 공개키 반환
         return(certificates[addr].certhash, certificates[addr].caPubkey, certificates[addr].userPubkey);
     }
     
