@@ -15,6 +15,10 @@ contract certificate {
         address userPubkey;
     }
     
+    struct deleteInfo{
+        bytes32 certhash;
+    }
+    
     bytes32 certhash;
     address addr;
     uint notBefore;
@@ -26,6 +30,7 @@ contract certificate {
     
     mapping(address => userinfo) public addressToInfo;
     mapping(address => cert) public certificates;
+    deleteInfo[] public del;
     
     
     function hasinfo() public returns(bool){
@@ -168,4 +173,9 @@ contract certificate {
         }
     }
     
+    function deleteCert() public {
+        del.push(deleteInfo(certhash));
+        delete addressToInfo[addr];
+        delete certificates[addr];
+    }
 }
